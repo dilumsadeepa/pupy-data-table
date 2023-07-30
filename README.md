@@ -11,7 +11,7 @@ The DataTable package is a reusable React component that provides a customizable
 To use the DataTable component in your React project, you can install it via npm:
 
   ```bash
-npm install my-datatable
+npm install pupydatatable
 ```
   
 ## Usage
