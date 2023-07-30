@@ -4,6 +4,8 @@ The react js data table works easily.
 
 ## DataTable Package
 
+<img src="https://github.com/dilumsadeepa/pupy-data-table/blob/main/public/screenshot1.png?raw=true" >
+
 The DataTable package is a reusable React component that provides a customizable and interactive data table. It allows you to display tabular data, perform searches, pagination, and export data in various formats.
 
 ## Installation
