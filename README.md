@@ -8,6 +8,9 @@ The react js data table works easily.
 
 The DataTable package is a reusable React component that provides a customizable and interactive data table. It allows you to display tabular data, perform searches, pagination, and export data in various formats.
 
+### home page
+https://github.com/dilumsadeepa/pupy-data-table
+
 ## Installation
 
 To use the DataTable component in your React project, you can install it via npm:
@@ -20,7 +23,8 @@ npm install pupydatatable
  
 ```bash
 import React from 'react';
-import DataTable from 'my-datatable';
+import DataTable from 'pupydatatable';
+//or import DataTable from 'pupydatatable/src';
   
 const columns = [
     { label: 'Name', dataKey: 'name' },

@@ -1,8 +1,6 @@
-// import logo from './logo.svg';
-// import './App.css';
-import 'bootstrap';
 
-import DataTable from "./component/DataTable";
+
+import DataTable from "./DataTable";
 
 
 function App() {
