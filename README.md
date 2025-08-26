@@ -21,13 +21,13 @@ https://github.com/dilumsadeepa/pupy-data-table
 
 ### NPM
 ```bash
-npm install pupy-data-table
+npm install puppy-data-table
 
 ```
 
 ### Import and use in your project:
 ```bash
-import DataTable from "pupy-data-table";
+import DataTable from "puppy-data-table";
 ```
 
 ### CDN
@@ -35,7 +35,7 @@ import DataTable from "pupy-data-table";
 Just include it directly in your HTML:
 
 ```bash
-<script src="https://unpkg.com/pupy-data-table/dist/datatable.umd.js"></script>
+<script src="https://unpkg.com/puppy-data-table/dist/datatable.umd.js"></script>
 
 ```
 
