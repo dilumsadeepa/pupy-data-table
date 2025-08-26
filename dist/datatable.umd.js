@@ -1,55 +1,60 @@
+(function (global, factory) {
+    typeof exports === 'object' && typeof module !== 'undefined' ? module.exports = factory() :
+    typeof define === 'function' && define.amd ? define(factory) :
+    (global = typeof globalThis !== 'undefined' ? globalThis : global || self, global.DataTable = factory());
+})(this, (function () { 'use strict';
 
-class DataTable {
+    class DataTable {
 
-    constructor(selector, options = {}) {
-        
-        this.table = document.querySelector(selector);
-        this.columns = options.columns || [];
+        constructor(selector, options = {}) {
+            
+            this.table = document.querySelector(selector);
+            this.columns = options.columns || [];
 
-        this.tableHeader = options.tableHeader ? document.querySelector(options.tableHeader) : null;
-        this.tableFooter = options.tableFooter ? document.querySelector(options.tableFooter) : null;
+            this.tableHeader = options.tableHeader ? document.querySelector(options.tableHeader) : null;
+            this.tableFooter = options.tableFooter ? document.querySelector(options.tableFooter) : null;
 
-        this.dataSource = options.data;
-        this.rows = [];
-        this.total = 0;
-        this.perPage = options.perPage || 10;
-        this.currentPage = 1;
-        this.q = "";
+            this.dataSource = options.data;
+            this.rows = [];
+            this.total = 0;
+            this.perPage = options.perPage || 10;
+            this.currentPage = 1;
+            this.q = "";
 
-        this.enablePaginate = "enablePaginate" in options ? options.enablePaginate : true;
-        this.enableSearch = "enableSearch" in options ? options.enableSearch : true;
-        this.enablePerPageSelector = "enablePerPageSelector" in options ? options.enablePerPageSelector : true;
-
-
+            this.enablePaginate = "enablePaginate" in options ? options.enablePaginate : true;
+            this.enableSearch = "enableSearch" in options ? options.enableSearch : true;
+            this.enablePerPageSelector = "enablePerPageSelector" in options ? options.enablePerPageSelector : true;
 
 
 
-        this.loadData();
-        this.injectStyles();
-        this.renderHeader();
-    }
 
-    async loadData() {
-        if (typeof this.dataSource === "function") {
-            const { rows, total } = await this.dataSource({
-                page: this.currentPage,
-                per_page: this.perPage,
-                q: this.q
-            });
-            this.rows = rows;
-            this.total = total ?? rows.length;
-        } else {
-            this.rows = this.dataSource || [];
-            this.total = this.rows.length;
+
+            this.loadData();
+            this.injectStyles();
+            this.renderHeader();
         }
-        this.render();
-    }
 
-    render() {
-        if (!this.table) return;
+        async loadData() {
+            if (typeof this.dataSource === "function") {
+                const { rows, total } = await this.dataSource({
+                    page: this.currentPage,
+                    per_page: this.perPage,
+                    q: this.q
+                });
+                this.rows = rows;
+                this.total = total ?? rows.length;
+            } else {
+                this.rows = this.dataSource || [];
+                this.total = this.rows.length;
+            }
+            this.render();
+        }
+
+        render() {
+            if (!this.table) return;
 
 
-        this.table.innerHTML = `
+            this.table.innerHTML = `
             <thead>
                 <tr>
                     ${this.columns.map(col => `<th>${col.label}</th>`).join('')}
@@ -70,18 +75,18 @@ class DataTable {
         `;
 
 
-        
+            
 
-        if (this.enablePaginate) {
-            this.renderFooter();
+            if (this.enablePaginate) {
+                this.renderFooter();
+            }
+
+            
         }
 
-        
-    }
+        renderHeader() {
 
-    renderHeader() {
-
-        this.tableHeader.innerHTML = `
+            this.tableHeader.innerHTML = `
             <div style="display: flex; justify-content: space-between">
                     <div>
                         ${ this.enablePerPageSelector ?
@@ -121,78 +126,78 @@ class DataTable {
         `;
 
 
-        const searchInput = document.querySelector("#datatable_search");
-        const searchBtn = document.querySelector("#datatable_search_btn");
+            const searchInput = document.querySelector("#datatable_search");
+            const searchBtn = document.querySelector("#datatable_search_btn");
 
-        if (searchInput) {
-            
-            let typingTimer;
-            searchInput.addEventListener("keyup", (e) => {
-                clearTimeout(typingTimer);
-                typingTimer = setTimeout(() => {
-                    this.q = e.target.value;
-                    this.currentPage = 1; 
+            if (searchInput) {
+                
+                let typingTimer;
+                searchInput.addEventListener("keyup", (e) => {
+                    clearTimeout(typingTimer);
+                    typingTimer = setTimeout(() => {
+                        this.q = e.target.value;
+                        this.currentPage = 1; 
+                        this.loadData();
+                    }, 500); 
+                });
+            }
+
+            if (searchBtn) {
+                searchBtn.addEventListener("click", () => {
+                    this.q = searchInput.value;
+                    this.currentPage = 1;
                     this.loadData();
-                }, 500); 
-            });
+                });
+            }
+
+            const perPageSelect = document.querySelector("#per_page");
+            if (perPageSelect) {
+                perPageSelect.addEventListener("change", (e) => {
+                    this.perPage = parseInt(e.target.value);
+                    this.currentPage = 1;
+                    this.loadData();
+                });
+            }
+
+            
+
         }
 
-        if (searchBtn) {
-            searchBtn.addEventListener("click", () => {
-                this.q = searchInput.value;
-                this.currentPage = 1;
-                this.loadData();
-            });
-        }
+        renderFooter() {
+            const totalPages = Math.ceil(this.total / this.perPage);
 
-        const perPageSelect = document.querySelector("#per_page");
-        if (perPageSelect) {
-            perPageSelect.addEventListener("change", (e) => {
-                this.perPage = parseInt(e.target.value);
-                this.currentPage = 1;
-                this.loadData();
-            });
-        }
+               
+                let pageButtons = "";
 
-        
+                
+                if (totalPages > 1) {
+                    pageButtons += `<button class="d-paginate-btn ${this.currentPage === 1 ? 'd-paginate-active' : ''}" data-page="1">1</button>`;
+                }
 
-    }
+                
+                if (this.currentPage > 3) {
+                    pageButtons += `<span class="d-paginate-dots">...</span>`;
+                }
 
-    renderFooter() {
-        const totalPages = Math.ceil(this.total / this.perPage);
+                
+                for (let i = Math.max(2, this.currentPage - 1); i <= Math.min(totalPages - 1, this.currentPage + 1); i++) {
+                    pageButtons += `<button class="d-paginate-btn ${this.currentPage === i ? 'd-paginate-active' : ''}" data-page="${i}">${i}</button>`;
+                }
 
-           
-            let pageButtons = "";
+                
+                if (this.currentPage < totalPages - 2) {
+                    pageButtons += `<span class="d-paginate-dots">...</span>`;
+                }
 
-            
-            if (totalPages > 1) {
-                pageButtons += `<button class="d-paginate-btn ${this.currentPage === 1 ? 'd-paginate-active' : ''}" data-page="1">1</button>`;
-            }
+                
+                if (totalPages > 1) {
+                    pageButtons += `<button class="d-paginate-btn ${this.currentPage === totalPages ? 'd-paginate-active' : ''}" data-page="${totalPages}">${totalPages}</button>`;
+                }
 
-            
-            if (this.currentPage > 3) {
-                pageButtons += `<span class="d-paginate-dots">...</span>`;
-            }
+                
 
-            
-            for (let i = Math.max(2, this.currentPage - 1); i <= Math.min(totalPages - 1, this.currentPage + 1); i++) {
-                pageButtons += `<button class="d-paginate-btn ${this.currentPage === i ? 'd-paginate-active' : ''}" data-page="${i}">${i}</button>`;
-            }
-
-            
-            if (this.currentPage < totalPages - 2) {
-                pageButtons += `<span class="d-paginate-dots">...</span>`;
-            }
-
-            
-            if (totalPages > 1) {
-                pageButtons += `<button class="d-paginate-btn ${this.currentPage === totalPages ? 'd-paginate-active' : ''}" data-page="${totalPages}">${totalPages}</button>`;
-            }
-
-            
-
-            
-            this.tableFooter.innerHTML = `
+                
+                this.tableFooter.innerHTML = `
                 <div style="display: flex; justify-content: space-between; align-items:center;">
                     <div class="d-paginate-text">
                         Showing ${this.perPage * (this.currentPage - 1) + 1} 
@@ -207,22 +212,22 @@ class DataTable {
                 </div>
             `;
 
-        // Add event listeners
-        this.tableFooter.querySelectorAll(".d-paginate-btn").forEach(btn => {
-            btn.addEventListener("click", async (e) => {
-                const page = parseInt(e.target.dataset.page);
-                if (page > 0) {
-                    this.currentPage = page;
-                    await this.loadData();
-                }
+            // Add event listeners
+            this.tableFooter.querySelectorAll(".d-paginate-btn").forEach(btn => {
+                btn.addEventListener("click", async (e) => {
+                    const page = parseInt(e.target.dataset.page);
+                    if (page > 0) {
+                        this.currentPage = page;
+                        await this.loadData();
+                    }
+                });
             });
-        });
-    }
+        }
 
-    injectStyles() {
-        if (document.getElementById("datatable-styles")) return; 
+        injectStyles() {
+            if (document.getElementById("datatable-styles")) return; 
 
-        const css = `
+            const css = `
         .d-table {
             width: 100%;
             border-collapse: collapse;
@@ -315,14 +320,14 @@ class DataTable {
         }
         `;
 
-        const style = document.createElement("style");
-        style.id = "datatable-styles";
-        style.innerHTML = css;
-        document.head.appendChild(style);
+            const style = document.createElement("style");
+            style.id = "datatable-styles";
+            style.innerHTML = css;
+            document.head.appendChild(style);
+        }
+
     }
 
-}
+    return DataTable;
 
-
-
-export default DataTable;
+}));

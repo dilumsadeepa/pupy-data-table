@@ -1,44 +1,30 @@
 {
-  "name": "pupydatatable",
-  "version": "0.1.1",
-  "private": false,
-  "homepage": "https://github.com/dilumsadeepa/pupy-data-table",
-  "main": "src/DataTable.jsx",
-  "module": "src/DataTable.jsx",
-  "dependencies": {
-    "@testing-library/jest-dom": "^5.17.0",
-    "@testing-library/react": "^13.4.0",
-    "@testing-library/user-event": "^13.5.0",
-    "jspdf": "^2.5.1",
-    "nodemon": "^3.0.1",
-    "react": "^18.2.0",
-    "react-dom": "^18.2.0",
-    "react-scripts": "5.0.1",
-    "web-vitals": "^2.1.4",
-    "xlsx": "^0.18.5"
-  },
+  "name": "pupy-data-table",
+  "version": "1.0.0",
+  "description": "The simple and lightweight DataTable",
+  "main": "dist/datatable.cjs.js",
+  "module": "dist/datatable.esm.js",
+  "unpkg": "dist/datatable.umd.js",
   "scripts": {
-    "start": "react-scripts start",
-    "build": "react-scripts build",
-    "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "build": "rollup -c"
   },
-  "eslintConfig": {
-    "extends": [
-      "react-app",
-      "react-app/jest"
-    ]
+  "files": [
+    "dist"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/dilumsadeepa/pupy-data-table.git"
   },
-  "browserslist": {
-    "production": [
-      ">0.2%",
-      "not dead",
-      "not op_mini all"
-    ],
-    "development": [
-      "last 1 chrome version",
-      "last 1 firefox version",
-      "last 1 safari version"
-    ]
+  "keywords": ["datatable", "table", "pagination", "search"],
+  "author": "Dilum Sadeepa",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/dilumsadeepa/pupy-data-table/issues"
+  },
+  "homepage": "https://github.com/dilumsadeepa/pupy-data-table#readme",
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^28.0.6",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "rollup": "^4.48.1"
   }
 }

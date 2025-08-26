@@ -1,3 +1,4 @@
+'use strict';
 
 class DataTable {
 
@@ -323,6 +324,4 @@ class DataTable {
 
 }
 
-
-
-export default DataTable;
+module.exports = DataTable;

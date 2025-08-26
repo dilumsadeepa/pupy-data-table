@@ -1,4 +1,3 @@
-
 class DataTable {
 
     constructor(selector, options = {}) {
@@ -323,6 +322,4 @@ class DataTable {
 
 }
 
-
-
-export default DataTable;
+export { DataTable as default };

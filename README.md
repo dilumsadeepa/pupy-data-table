@@ -1,105 +1,128 @@
-# pupy-data-table
-The react js data table works easily.
+# 📝 pupy-data-table
 
+A lightweight, flexible JavaScript DataTable component with **search**, **pagination**, and **rows-per-page selector**.  
+Works with **plain JavaScript**, no dependencies. Use via **npm** or **CDN**.
 
-## DataTable Package
+---
 
-<img src="https://github.com/dilumsadeepa/pupy-data-table/blob/main/public/screenshot1.png?raw=true" >
+## 🚀 Features
+- 🔍 Client-side search  
+- 📑 Pagination  
+- 📊 Rows-per-page selector  
+- 🎨 Minimal default styles (customizable)  
+- 🔌 Supports static arrays or async data functions  
 
-The DataTable package is a reusable React component that provides a customizable and interactive data table. It allows you to display tabular data, perform searches, pagination, and export data in various formats.
+---
 
 ### home page
 https://github.com/dilumsadeepa/pupy-data-table
 
-## Installation
+## 📦 Installation
 
-To use the DataTable component in your React project, you can install it via npm:
+### NPM
+```bash
+npm install pupy-data-table
 
-  ```bash
-npm install pupydatatable
 ```
-  
+
+### Import and use in your project:
+```bash
+import DataTable from "pupy-data-table";
+```
+
+### CDN
+
+Just include it directly in your HTML:
+
+```bash
+<script src="https://unpkg.com/pupy-data-table/dist/datatable.umd.js"></script>
+
+```
+
 ## Usage
+
+### Basic Example (Static Data)
+
+
  
 ```bash
-import React from 'react';
-import DataTable from 'pupydatatable';
-//or import DataTable from 'pupydatatable/src';
-  
-const columns = [
-    { label: 'Name', dataKey: 'name' },
-    { label: 'Age', dataKey: 'age' },
-    { label: 'Email', dataKey: 'email' },
-    // Add more columns here...
-];
-  
-const data = [
-    { name: 'John Doe', age: 30, email: 'john@example.com' },
-    { name: 'Jane Smith', age: 25, email: 'jane@example.com' },
-    // Add more data here...
-];
-  
-const handleEditRow = (rowData) => {
-    // Implement the logic to edit the row data
-};
-  
-const handleViewRow = (rowData) => {
-    // Implement the logic to view the row data
-};
-  
-const handleDeleteRow = (rowData) => {
-    // Implement the logic to delete the row data
-};
-  
-const App = () => {
-    return (
-      <div>
-        <DataTable
-          columns={columns}
-          data={data}
-          onEditRow={handleEditRow}
-          onViewRow={handleViewRow}
-          onDeleteRow={handleDeleteRow}
-        />
-      </div>
-    );
-};
-  
-export default App;
+<div id="tableHeader"></div>
+<table id="myTable" class="d-table"></table>
+<div id="tableFooter"></div>
+
+<script>
+  const table = new DataTable("#myTable", {
+    tableHeader: "#tableHeader",
+    tableFooter: "#tableFooter",
+    columns: [
+      { key: "title", label: "Title" },
+      { key: "category", label: "Category" },
+      { key: "price", label: "Price" }
+    ],
+    data: [
+      { title: "Wireless Mouse", category: "Electronics", price: "$15" },
+      { title: "Leather Wallet", category: "Accessories", price: "$25" },
+      { title: "Sports Shoes", category: "Footwear", price: "$45" },
+      { title: "Bluetooth Speaker", category: "Electronics", price: "$30" }
+    ]
+  });
+</script>
 ```
 
+### Async Example (Fetch Data)
 
-## Props
+You can also use a function that returns data (useful for APIs):
 
-### columns: 
- An array of column definitions. Each column should have a label and a corresponding data key.
+```bash
+const table = new DataTable("#myTable", {
+  tableHeader: "#tableHeader",
+  tableFooter: "#tableFooter",
+  columns: [
+    { key: "product", label: "Product", render: row => `<strong>${row.name}</strong>` },
+    { key: "stock", label: "Stock" },
+    { key: "rating", label: "Rating" }
+  ],
+  data: async ({ page, per_page, q }) => {
+    // Fake API call
+    const allData = [
+      { product: "Gaming Laptop", stock: 12, rating: "⭐⭐⭐⭐" },
+      { product: "Desk Lamp", stock: 30, rating: "⭐⭐⭐" },
+      { product: "Backpack", stock: 18, rating: "⭐⭐⭐⭐⭐" },
+      { product: "Smart Watch", stock: 10, rating: "⭐⭐⭐⭐" }
+    ];
 
-### data: 
- An array of data objects representing the rows to be displayed in the table.
+    const filtered = q
+      ? allData.filter(row =>
+          Object.values(row).some(v =>
+            String(v).toLowerCase().includes(q.toLowerCase())
+          )
+        )
+      : allData;
 
-### onEditRow: 
- A function that will be called when the "Edit" button is clicked for a row.
+    const start = (page - 1) * per_page;
+    const end = start + per_page;
 
-### onViewRow: 
- A function that will be called when the "View" button is clicked for a row.
+    return {
+      rows: filtered.slice(start, end),
+      total: filtered.length
+    };
+  }
+});
 
-### onDeleteRow: 
- A function that will be called when the "Delete" button is clicked for a row.
+```
 
+## ⚙️ Options
 
-## Exporting Data
-
-The DataTable component allows you to export the data in different formats such as PDF, CSV, and Excel. Use the respective buttons provided to trigger the export.
-
-
-## Pagination
-
-By default, the DataTable shows 5 rows per page. You can change the number of rows per page using the dropdown menu.
-
-
-## Searching
-
-The DataTable provides a search box to filter rows based on the entered search term.
+| Option                  | Type                             | Default | Description                                                                       |
+| ----------------------- | -------------------------------- | ------- | --------------------------------------------------------------------------------- |
+| `columns`               | `Array<{ key, label, render? }>` | `[]`    | Defines the table columns. `render(row)` lets you customize cell content.         |
+| `data`                  | `Array` or `Function`            | `[]`    | Data source: either a static array or async function returning `{ rows, total }`. |
+| `tableHeader`           | `string` (selector)              | `null`  | Element to render search & per-page controls.                                     |
+| `tableFooter`           | `string` (selector)              | `null`  | Element to render pagination.                                                     |
+| `perPage`               | `number`                         | `10`    | Default rows per page.                                                            |
+| `enablePaginate`        | `boolean`                        | `true`  | Enable/disable pagination.                                                        |
+| `enableSearch`          | `boolean`                        | `true`  | Enable/disable search.                                                            |
+| `enablePerPageSelector` | `boolean`                        | `true`  | Enable/disable per-page dropdown.                                                 |
 
 
 ## License
