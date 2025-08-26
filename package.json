@@ -1,6 +1,6 @@
 {
   "name": "puppy-data-table",
-  "version": "1.0.0",
+  "version": "2.0.0",
   "description": "The simple and lightweight DataTable",
   "main": "dist/datatable.cjs.js",
   "module": "dist/datatable.esm.js",
