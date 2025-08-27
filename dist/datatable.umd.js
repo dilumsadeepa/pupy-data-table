@@ -21,12 +21,15 @@
             this.currentPage = 1;
             this.q = "";
 
+            this.sortBy = options.sortBy || null;
+            this.sortDir = options.sortDir || "asc";
+
             this.enablePaginate = "enablePaginate" in options ? options.enablePaginate : true;
             this.enableSearch = "enableSearch" in options ? options.enableSearch : true;
             this.enablePerPageSelector = "enablePerPageSelector" in options ? options.enablePerPageSelector : true;
 
 
-
+            this.checkBeforeInit();
 
 
             this.loadData();
@@ -34,30 +37,94 @@
             this.renderHeader();
         }
 
+        checkBeforeInit() {
+            if (this.columns == []) {
+                alert('Provide the columns');
+                return;
+            }
+
+            if (this.sortBy == 'null' || this.sortBy == '' || this.sortBy == null) {
+                alert("sortBy key is requerd");
+                return;
+            }
+
+            if (this.enablePaginate) {
+                if (this.tableFooter == null) {
+                    alert("Provide the selector for table footer");
+                    return
+                }
+            }
+
+            if (this.enablePerPageSelector || this.enableSearch) {
+                if (this.tableHeader == null) {
+                    alert("Provide the selector for table header");
+                    return
+                }
+            }
+
+        }
+
         async loadData() {
             if (typeof this.dataSource === "function") {
                 const { rows, total } = await this.dataSource({
                     page: this.currentPage,
                     per_page: this.perPage,
-                    q: this.q
+                    q: this.q,
+                    sort_by: this.sortBy,
+                    sort_dir: this.sortDir
                 });
                 this.rows = rows;
                 this.total = total ?? rows.length;
             } else {
                 this.rows = this.dataSource || [];
                 this.total = this.rows.length;
+
+                if (this.sortBy) {
+                    this.rows.sort((a, b) => {
+                        let valA = a[this.sortBy];
+                        let valB = b[this.sortBy];
+                        if (typeof valA === "string") valA = valA.toLowerCase();
+                        if (typeof valB === "string") valB = valB.toLowerCase();
+                        if (valA < valB) return this.sortDir === "asc" ? -1 : 1;
+                        if (valA > valB) return this.sortDir === "asc" ? 1 : -1;
+                        return 0;
+                    });
+                }
             }
             this.render();
+        }
+
+        escapeHtml(text) {
+            if (typeof text !== "string") return text;
+            return text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
         }
 
         render() {
             if (!this.table) return;
 
+            const upArrow = `<img style="width:14px;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAACXBIWXMAAAsTAAALEwEAmpwYAAAA2ElEQVR4nO3Sv0oDQRAH4C+VEvAvWJjCxiZVrKx8BTvLFIoIqW1Nk1fwFdJZ+hiCaGWjjUXKIAhRIaCRwFRBi/NyAWE+WBZ2duYHd0tKKaV/bAud2BduH8+YYICDRQXXcI5xhA9jH8f5tF6ZFVxF4BcusYwePuP8GutVhDfxECGvOJqpH+Il6o9ozTO8jVEMv8fuL/d2cBP3PnBWNngpPvMkVh/1Cnp+tI3bGPKOE8Uc4y3679Ao2K8bzU/Y8zeteA/TORdFmzfjH64pZxWn2Cg5J6WUksp8A8i3MBZ5RhhSAAAAAElFTkSuQmCC" alt="external-app-minimal-ui-outline-astudio-18">`;
+            const downArrow = `<img style="width:14px;" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAYAAABXAvmHAAAACXBIWXMAAAsTAAALEwEAmpwYAAABc0lEQVR4nO2XPShFYRjHf8gVBpKPhWxMrDYfo5JZyqaUxSRiuZtSspDcUgalO1GSoiQjihKTZGIwGRTC1alz6+kZ3O6597znnHp+9S7n4//8nnPO+74dMAzDMAzDMIw4MgicADMR1W8GssAe0BIk4AbI+SONW5qAa1F/LkjIpgjwxgJuaAAuRd1voD9IUAo4UE3MEy71wLmo9wtMlhLoNXGompglHOqAMyU/VY7gWuBUBU+XI9hljdCeDg7fsv4+f4CJEjNTrueZt0JcqBViPGBWNbCv5BdxQCNwpZoYKzKjCthV8mnXu+StKP4FjBYhv6PkV4iAVuBOSHwCIwXuqQAySn6VCGkD7lUTw//Ibyj5jH88UtqBByH1DgypazzJdSW/BVQSEzqAR9XEgDi/rOS34ySfpxN4EpJvQB+wpOSz/kSOJV3As5D9SJJ8nm7gRYnn/B8Tb/NKBD3Aq5A/AmpIGL3AMbCWRHnDMAzDMAzDoCB/FwKQ9pBfdLAAAAAASUVORK5CYII=" alt="expand-arrow">`;
 
             this.table.innerHTML = `
             <thead>
                 <tr>
-                    ${this.columns.map(col => `<th>${col.label}</th>`).join('')}
+                    ${this.columns.map(col => `
+                        <th 
+                            data-key="${col.key}" 
+                            class="${col.sortable ? 'sortable' : ''}"
+                            style="cursor: ${col.sortable ? 'pointer' : 'default'}"
+                        >
+                            ${col.label}
+                            ${col.sortable || this.sortBy === col.key 
+                                ? (this.sortDir === "asc" ? upArrow : downArrow) 
+                            : ""}
+                        </th>
+                    `).join('')}
                 </tr>
             </thead>
             <tbody>
@@ -65,9 +132,10 @@
                 <tr>
                     ${this.columns.map(col => {
                         if (typeof col.render === "function") {
-                            return `<td>${col.render(row)}</td>`;
+                            return `<td>${col.render(row) ?? ""}</td>`;
                         }
-                        return `<td>${row[col.key] ?? ""}</td>`;
+                        const value = row[col.key] ?? "";
+                        return `<td>${this.escapeHtml(value)}</td>`;
                     }).join('')}
                 </tr>
                 `).join('')}
@@ -75,6 +143,18 @@
         `;
 
 
+            this.table.querySelectorAll("th.sortable").forEach(th => {
+                th.addEventListener("click", () => {
+                    const key = th.dataset.key;
+                    if (this.sortBy === key) {
+                        this.sortDir = this.sortDir === "asc" ? "desc" : "asc";
+                    } else {
+                        this.sortBy = key;
+                        this.sortDir = "asc";
+                    }
+                    this.loadData();
+                });
+            });
             
 
             if (this.enablePaginate) {

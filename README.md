@@ -1,3 +1,4 @@
+
 # 📝 pupy-data-table
 
 A lightweight, flexible JavaScript DataTable component with **search**, **pagination**, and **rows-per-page selector**.  
@@ -16,6 +17,9 @@ Works with **plain JavaScript**, no dependencies. Use via **npm** or **CDN**.
 
 ### home page
 https://github.com/dilumsadeepa/pupy-data-table
+
+### Laravel DataTable BUilder
+https://packagist.org/packages/dilum/puppy-data-table
 
 ## 📦 Installation
 
@@ -106,7 +110,15 @@ const table = new DataTable("#myTable", {
       rows: filtered.slice(start, end),
       total: filtered.length
     };
-  }
+  },
+  perPage: 1,
+  tableHeader: '#table_head',
+  tableFooter: '#table_footer',
+  enablePaginate: true,
+  enableSearch : false,
+  enablePerPageSelector: false,
+  sortBy:'created_at',
+  sortDir:'desc',
 });
 
 ```
@@ -123,6 +135,9 @@ const table = new DataTable("#myTable", {
 | `enablePaginate`        | `boolean`                        | `true`  | Enable/disable pagination.                                                        |
 | `enableSearch`          | `boolean`                        | `true`  | Enable/disable search.                                                            |
 | `enablePerPageSelector` | `boolean`                        | `true`  | Enable/disable per-page dropdown.                                                 |
+| `sortBy` | `string`                        | `requerd`  | Sort by column.                                                 |
+| `sortDir` | `string`                        | `asc`  | Sort direction                                             |
+
 
 
 ## License
